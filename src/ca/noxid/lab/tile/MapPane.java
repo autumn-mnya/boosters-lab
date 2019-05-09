@@ -129,11 +129,11 @@ public class MapPane extends BgPanel {
 		redoItem.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.Event.CTRL_MASK));
 		JMenuItem secret_undoItem;
 		secret_undoItem = new JMenuItem(undo);
-		secret_undoItem.setText(Messages.getString("MapPane.3")); //$NON-NLS-1$
+		secret_undoItem.setText(Messages.getString("MapPane.1")); //$NON-NLS-1$
 		secret_undoItem.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.Event.CTRL_MASK));
 		JMenuItem secret_redoItem;
 		secret_redoItem = new JMenuItem(redo);
-		secret_redoItem.setText(Messages.getString("MapPane.4")); //$NON-NLS-1$
+		secret_redoItem.setText(Messages.getString("MapPane.2")); //$NON-NLS-1$
 		secret_redoItem.setAccelerator(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.Event.CTRL_MASK));
 		@SuppressWarnings("serial")
 		JMenuItem shiftItem = new JMenuItem(new AbstractAction() {
@@ -478,18 +478,17 @@ public class MapPane extends BgPanel {
 		int scale = (int) (dataHolder.getConfig().getTileSize() * EditorApp.mapScale);
 		int mapX = dataHolder.getMapX();
 		int mapY = dataHolder.getMapY();
-		int bgw = background.getWidth();
-		int bgh = background.getHeight();
+		int bgw = (int) (background.getWidth() * EditorApp.mapScale);
+		int bgh = (int) (background.getHeight() * EditorApp.mapScale);
 		Rectangle r = g.getClipBounds();
 		int startX = 0;
 		int startY = 0;
 		int endX = mapX * scale;
 		int endY = mapY * scale;
 		if (r != null) {
-			//System.out.println(r);
 			startX = r.x - r.x % bgw;
 			if (startX < 0) startX = 0;
-			startY = r.y - r.y % bgw;
+			startY = r.y - r.y % bgh;
 			if (startY < 0) startY = 0;
 			endX = startX + r.width + bgw;
 			if (endX < 2) endX = 2;
@@ -499,7 +498,14 @@ public class MapPane extends BgPanel {
 
 		for (int y = startY; y < endY; y += bgh) {
 			for (int x = startX; x < endX; x += bgw) {
-				g.drawImage(background, x, y, this);
+				g.drawImage(background, x, y,
+						x + bgw,
+						y + bgh,
+						0,
+						0,
+						background.getWidth(),
+						background.getHeight(),
+						this);
 			}
 		}
 
@@ -514,29 +520,6 @@ public class MapPane extends BgPanel {
 		}
 	}
 	
-	/* no longer necessary
-	public void setTileset(File pxa, File img) {
-		iMan.addImage(img, 1);
-		iMan.addPxa(pxa);
-		tileset = img;
-		tilePane.setTileset(pxa, img);
-		preview.setTileset(img);
-	}
-	
-	public void setNpc1Img(File f) {
-		iMan.addImage(f, 1);
-		this.npcImage1 = f;
-	}
-	public void setNpc2Img(File f) {
-		iMan.addImage(f, 1);
-		this.npcImage2 = f;
-	}
-	public void setBgImg(File f) {
-		iMan.addImage(f, 0);
-		this.bgImage = f;
-	}	
-	*/
-
 	class TileBuffer {
 		int[][] data;
 		int dx;
@@ -591,7 +574,6 @@ public class MapPane extends BgPanel {
 			}
 		}
 	}
-
 
 	protected Rectangle fillPen(Rectangle cursor) {
 		int currentLayer = parent.getActiveLayer();
@@ -830,9 +812,9 @@ public class MapPane extends BgPanel {
 						new TilescriptAction(cursorX, cursorY, tilePen.get(0, 0),
 								parent.getActiveLayer()));
 				popup_tilescript.setText(Messages.getString(
-						"MapPane.15") + cursorX + "," + cursorY + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						"MapPane.11") + cursorX + "," + cursorY + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				popup_tra.setAction(new TraScriptAction(cursorX, cursorY, dataHolder.getMapNumber()));
-				popup_tra.setText(Messages.getString("MapPane.18")); //$NON-NLS-1$
+				popup_tra.setText(Messages.getString("MapPane.14")); //$NON-NLS-1$
 				popup.show(eve.getComponent(), eve.getX(), eve.getY());
 				return;
 			}
@@ -1385,7 +1367,9 @@ public class MapPane extends BgPanel {
 			}
 			repaint();
 		}
-	}	protected void drawCursor(Graphics2D g2d) {
+	}
+
+	protected void drawCursor(Graphics2D g2d) {
 		if (g2d == null) {
 			g2d = (Graphics2D) this.getGraphics();
 		}
@@ -1467,7 +1451,9 @@ public class MapPane extends BgPanel {
 				lastP = p;
 			}// if the point is not where it was
 		}
-	}	protected void moveCursor(Rectangle newCursor) {
+	}
+
+	protected void moveCursor(Rectangle newCursor) {
 		int sc = (int) (dataHolder.getConfig().getTileSize() * EditorApp.mapScale);
 		if (cursorLoc != null) {
 			this.repaint(cursorLoc.x * sc,

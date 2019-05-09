@@ -24,11 +24,13 @@ public class TscLexer {
 
 	private String line;
 	private int strPos;
+	private String cmd;
 	private int argsRemaining;
+	private int paramNum;
 
 	private TscToken lastToken;
 
-	private static Map<String, Integer> argMap = new Hashtable<>();
+	private static Map<String, TscCommand> cmdMap = new Hashtable<>();
 
 	public TscLexer() {
 
@@ -56,7 +58,7 @@ public class TscLexer {
 
 	static void initMap(Vector<TscCommand> commandInf) {
 		for (int i = 0; i < commandInf.size(); i++) {
-			argMap.put(commandInf.elementAt(i).commandCode, commandInf.elementAt(i).numParam);
+			cmdMap.put(commandInf.elementAt(i).commandCode, commandInf.elementAt(i));
 		}
 	}
 
@@ -73,7 +75,7 @@ public class TscLexer {
 			charCount = 0;
 			overLimit = false;
 		}
-		TscToken nextToken;
+		TscToken nextToken = null;
 		String tokenStr = ""; //$NON-NLS-1$
 		if (lastToken != null && lastToken.getDescription().equals(TscPane.STYLE_SBEVENT)) {
 			tokenStr = line;
@@ -110,10 +112,11 @@ public class TscLexer {
 			//noinspection UnusedAssignment
 			eventType = TscLexer.EVENT_NORMAL;
 		} else if (argsRemaining > 0) {
-			if ((lastToken.getContents().charAt(0) == '<') || (lastToken.getContents().length() == 1)) {
+			if ((lastToken.getContents().charAt(0) == '<') || ((lastToken.getContents().length() == 1) || cmdMap.containsKey(cmd) && !cmdMap.get(cmd).paramSep)) {
 				//number token
 				//try to grab the value one character at a time
-				for (int i = 0; i < 4; i++) {
+				TscCommand c = cmdMap.get(cmd);
+				for (int i = 0; i < c.paramLen[paramNum]; i++) {
 					try {
 						tokenStr += line.charAt(strPos + i);
 					} catch (IndexOutOfBoundsException e) {
@@ -125,21 +128,25 @@ public class TscLexer {
 						return nextToken;
 					}
 				}
-				nextToken = new TscToken(TscPane.STYLE_NUM, tokenStr, lineNum, character, character + 4);
-				if (lastToken.getContents().equals("<FAC") && //$NON-NLS-1$
-						tokenStr.equals("0000")) //$NON-NLS-1$
-				{
-					isFace = false;
+				nextToken = new TscToken(TscPane.STYLE_NUM, tokenStr, lineNum, character, character + c.paramLen[paramNum]);
+				if (lastToken.getContents().equals("<FAC")) { //$NON-NLS-1$
+					if (tokenStr.equals("0000")) //$NON-NLS-1$
+						isFace = false;
+					else
+						isFace = true;
 				}
-				character += 4;
-				strPos += 4;
+				character += c.paramLen[paramNum];
+				strPos += c.paramLen[paramNum];
 				argsRemaining--;
+				paramNum++;
 			} else {
 				//spacer token
-				tokenStr += line.charAt(strPos);
-				nextToken = new TscToken(TscPane.STYLE_SPACER, tokenStr, lineNum, character, character + 1);
-				character++;
-				strPos++;
+				if (cmdMap.containsKey(cmd) && cmdMap.get(cmd).paramSep) {
+					tokenStr += line.charAt(strPos);
+					nextToken = new TscToken(TscPane.STYLE_SPACER, tokenStr, lineNum, character, character + 1);
+					character++;
+					strPos++;
+				}
 			}
 		} else if (wasEnded) {
 			int tokenLen = line.substring(strPos).length();
@@ -162,33 +169,23 @@ public class TscLexer {
 						return nextToken;
 					}
 				}
-				if (argMap.containsKey(tokenStr)) {
-					argsRemaining = argMap.get(tokenStr);
+				cmd = tokenStr;
+				paramNum = 0;
+				if (cmdMap.containsKey(cmd)) {
+					TscCommand cmdDef = cmdMap.get(cmd);
+					argsRemaining = cmdDef.numParam;
+					if (cmdDef.endsEvent)
+						wasEnded = true;
+					if (cmdDef.clearsMsg) {
+						charCount = 0;
+						overLimit = false;
+					}
 				} else {
 					argsRemaining = 0;
-				}
-				if (tokenStr.equals("<FAC")) //$NON-NLS-1$
-				{
-					isFace = true;
-				}
-				if (tokenStr.equals("<END") ||  //$NON-NLS-1$
-						tokenStr.equals("<TRA") ||  //$NON-NLS-1$
-						tokenStr.equals("<EVE") ||  //$NON-NLS-1$
-						tokenStr.equals("<LDP") ||  //$NON-NLS-1$
-						tokenStr.equals("<INI") || //$NON-NLS-1$
-						tokenStr.equals("<ESC")) //$NON-NLS-1$
-				{
-					wasEnded = true;
-				}
-				if (tokenStr.equals("<CLR")) //$NON-NLS-1$
-				{
-					charCount = 0;
-					overLimit = false;
 				}
 				nextToken = new TscToken(TscPane.STYLE_TAG, tokenStr, lineNum, character, character + 4);
 				character += 4;
 				strPos += 4;
-
 			} else if (nextChar == '/' && line.length() > strPos + 1
 					&& line.charAt(strPos + 1) == '/') { // comment
 				tokenStr = line.substring(strPos);
