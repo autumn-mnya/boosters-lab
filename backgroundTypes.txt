@@ -6,4 +6,3 @@
 5 - Scroll Fast Left
 6 - Parallax, Items fall left
 7 - Parallax scroll (clouds)
-8 - Checkered (file select)
