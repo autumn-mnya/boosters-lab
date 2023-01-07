@@ -36,7 +36,7 @@
 #29	Cthu	 	Cthulhu 	0:384:32:432	Cthulhu 	CE:Characters Character:Human Tileset:Regu ;
 #30	Hermt	Gunsm	Gunsmith 	0:64:32:96	Hermit Gunsmith 	CE:Characters Character:Human Tileset:Guest ;
 #31	Enemy	BatBH	Bat(hang_black) 	0:158:32:190	Enemy - Bat (black, hanging) 	CE:Grasstown Tileset:Weed Enemy:Air ;
-#32	Capsl	life	Life Capsule	64:192:96:224	Life Capsule 	General:Prop CE:General Tileset:Sym ;
+#32	Heart	life	Heart Container	0:480:32:512	Heart Container 	General:Prop CE:General Tileset:Sym ;
 #33	Proj	Blrg2	Shot(Bllg_bounce) 	480:160:512:192	Projectile - Balrog (energy bounce) 	CE:Balrog Tileset:Bllg Projectile:All ;
 #34	Bed	 	Bed 	384:96:448:128	Bed 	General:Prop CE:General Tileset:Sym ;
 #35	Enemy	Manan	Mannan 	192:128:240:192	Enemy - Mannan 	CE:Grasstown Tileset:Weed Enemy:Ground ;
@@ -59,7 +59,7 @@
 #52	BRobt	sit	BlueRobot(sit) 	512:400:544:432	Blue robot (sitting) 	CE:Misc Character:Other Tileset:Regu ;
 #53	CRASH	 	Unknown(crash) 	0:0:0:0	<CRASH> 	CE:Crash ;
 #54	Enemy	SkulS	SkullStep 	64:160:128:204	Enemy - Skullstep 	CE:SandZone Tileset:Sand Enemy:Ground ;
-#55	Kazum	 	Kazuma 	384:384:416:432	Kazuma 	CE:Characters Character:Human Tileset:Regu ;
+#55	Kazum	 	Cairn 	384:384:416:432	Kazuma 	CE:Characters Character:Human Tileset:Regu ;
 #56	Enemy	BtlHB	BeetleHorizBrown 	0:284:32:316	Enemy - Beetle (horiz, brown) 	CE:SandZone Tileset:Sand Enemy:Air ;
 #57	Enemy	Crow	Crow 	192:160:256:224	Enemy - Crow 	CE:SandZone Tileset:Sand Enemy:Air ;
 #58	Enemy	Basu1	Basu(1) 	384:0:432:48	Enemy - Basu (1) 	CE:Egg1 Tileset:Eggs1 Enemy:Air ;
@@ -221,7 +221,7 @@
 #214	Proj	NiteS	Projectile - Night Spirit 	288:96:352:128	Projectile - Night Spirit 	CE:OuterWall ;
 #215	Enemy	ScrcW	Enemy - Sandcroc (white) 	0:240:96:256	Enemy - Sandcroc (white) 	CE:OuterWall ;
 #216	Debug	cat	Debug cat 	512:400:544:432	Debug cat 	CE:Characters ;
-#217	Itoh	 	Itoh	288:128:320:160	Itoh	CE:Characters ;
+#217	Itoh	 	Itoh	288:128:160:320	Itoh	CE:Characters ;
 #218	Proj?	 	Projectile?	0:0:0:0	Projectile?	CE:Unsure ;
 #219	Genrt	Smoke	Generator - Smoke/Underwater current 	32:0:64:32	Generator - Smoke/Underwater current 	CE:Misc ;
 #220	SBrig	stand	Shovel Brigade 	0:128:32:160	Shovel Brigade 	CE:Characters ;
@@ -356,7 +356,7 @@
 #349	Statu	 	Statue	64:200:128:288	Statue	CE:Statue ;
 #350	Enemy	ButRA	Enemy - Bute (archer, red) 	98:324:140:364	Enemy - Bute (archer, red) 	CE:Ballos ;
 #351	Statu	shoot	Statue (can shoot) 	0:0:0:0	Statue (can shoot) 	CE:Statue ;
-#352	Cred	NPC	Credits NPCs 	448:64:476:96	Credits NPCs 	CE:Characters ;
+#352	King	sword	King (sword) 	448:64:476:96	King (sword) 	CE:Characters ;
 #353	Enemy	ButRS	Enemy - Bute (sword, red) 	396:316:432:352	Enemy - Bute (sword, red) 	CE:Ballos ;
 #354	Invis	Trap	Invisible deathtrap wall 	0:0:0:0	Invisible deathtrap wall 	CE:Unsure ;
 #355	CRASH	SOME	<CRASH> (Sometimes) 	0:0:0:0	<CRASH> (Sometimes) 	CE:Crash ;

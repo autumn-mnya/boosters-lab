@@ -44,14 +44,15 @@ public class EditorApp extends JFrame implements ActionListener {
 	public static boolean blazed = false;
 
 	// about dialog
-	private static final String VER_NUM = "0.5.1.1"; //$NON-NLS-1$
-	private static final String TITLE_STR = "Booster's Lab V" + VER_NUM;
+	private static final String VER_NUM = "0.5.1.2C"; //$NON-NLS-1$
+	private static final String TITLE_STR = "Woosters Lab" + VER_NUM;
 	private static final String ABOUT_STR = Messages.getString("EditorApp.1") + VER_NUM + "\n" + //$NON-NLS-1$ //$NON-NLS-2$
-			"By Noxid & Open Source Contributors - 10/03/2019\n" + //$NON-NLS-1$
+			"By Noxid, Autumn, & Open Source Contributors - 8/1/2022\n" + //$NON-NLS-1$
 			Messages.getString("EditorApp.4") + //$NON-NLS-1$
 			Messages.getString("EditorApp.5"); //$NON-NLS-1$
 
 	public static int EDITOR_MODE = 0;
+	public static int EDITOR_BITMAP_MODE = 0;
 	/*
 	 * 0 = regular CS
 	 * 1 = CS w/ layers
@@ -155,6 +156,7 @@ public class EditorApp extends JFrame implements ActionListener {
 	// entities
 	private JList<String> categoryList;
 	private JList<String> subcatList;
+	private String entitySearchQuery = ""; // joexyz
 
 	/*
 	 * Getters and setters
@@ -1440,7 +1442,7 @@ public class EditorApp extends JFrame implements ActionListener {
 						TabOrganizer currentTab = componentVec.get(selected);
 						EntityPane ep = currentTab.getEntity();
 						Vector<EntityData> eVec = exeData.getEntityList(categoryList.getSelectedValue(),
-								subcatList.getSelectedValue());
+								subcatList.getSelectedValue(), entitySearchQuery);
 						ep.getEntityList().setListData(eVec);
 					} // if there is a selected tab
 				} // if doubleclick
@@ -1478,6 +1480,37 @@ public class EditorApp extends JFrame implements ActionListener {
 		npcTblButton.setText(Messages.getString("EditorApp.114")); //$NON-NLS-1$
 		npcTblButton.setOpaque(false);
 		tempPanel.add(npcTblButton, c);
+		
+		// joexyz
+		
+		// search entity panel
+		c.gridx++;
+		JPanel entitySearchPanel = new JPanel(new BorderLayout(8, 8));
+		entitySearchPanel.setBackground(new Color(0, 0, 0, 0));
+
+		// entity search box
+		JTextField searchField = new JTextField("", 20);
+		entitySearchPanel.add(searchField, BorderLayout.NORTH);
+
+		// entity search button
+		JButton searchButton = new JButton(new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				entitySearchQuery = searchField.getText();
+				int selected = EditorApp.this.mapTabs.getSelectedIndex();
+				if (selected != -1) {
+					TabOrganizer currentTab = componentVec.get(selected);
+					EntityPane ep = currentTab.getEntity();
+					Vector<EntityData> eVec = exeData.getEntityList(categoryList.getSelectedValue(),
+							subcatList.getSelectedValue(), entitySearchQuery);
+					ep.getEntityList().setListData(eVec);
+				}
+			}
+		});
+		searchButton.setText("Search entities");
+
+		entitySearchPanel.add(searchButton, BorderLayout.CENTER);
+		tempPanel.add(entitySearchPanel, c);
 
 		// buffer space
 		c.gridx++;
@@ -2653,7 +2686,7 @@ public class EditorApp extends JFrame implements ActionListener {
 	public Vector<EntityData> getEntityList() {
 		String category = categoryList.getSelectedValue();
 		String subcat = subcatList.getSelectedValue();
-		return exeData.getEntityList(category, subcat);
+		return exeData.getEntityList(category, subcat, entitySearchQuery);
 	}
 
 	private Vector<TscPane> getOpenScripts() {
@@ -2706,11 +2739,25 @@ public class EditorApp extends JFrame implements ActionListener {
 
 		// parse args
 		for (String s : args) {
-			if (s.startsWith("MODE=")) {
+			if (s.startsWith("MODE="))
+			{
 				String val = s.split("=", 2)[1];
-				try {
+				try
+				{
 					EDITOR_MODE = Integer.parseInt(val);
-				} catch (NumberFormatException ignored) {
+				} catch (NumberFormatException ignored)
+				{
+
+				}
+			}
+			else if (s.startsWith("BITMAPMODE="))
+			{
+				String val = s.split("=", 2)[1];
+				try
+				{
+					EDITOR_BITMAP_MODE = Integer.parseInt(val);
+				} catch (NumberFormatException ignored)
+				{
 
 				}
 			}

@@ -87,6 +87,10 @@ public class GameInfo {
 	public MOD_TYPE type;
 	
 	public static final String[] sfxNames = loadSfxNames();
+	public static final String[] BackgroundTypeNames = loadBackgroundTypeNames();
+	public static final String[] NpcSizeNames = loadNpcSizeNames();
+	public static final String[] NpcSurfaceNames = loadNpcSurfaceNames();
+	public static final String[] MapBossesNames = loadMapBossesNames();
 
 	public File getBase() {
 		return base;
@@ -109,7 +113,10 @@ public class GameInfo {
 				try {
                     executable = new CSExe(base); //can fix swdata
                     getExeData(executable);
-                    defaultImageExt = ".bmp";
+					if (EditorApp.EDITOR_BITMAP_MODE == 1)
+						defaultImageExt = ".png";
+					else
+						defaultImageExt = ".bmp";
                 } catch (Exception ioe) {
 				    ioe.printStackTrace();
                     StrTools.msgBox(Messages.getString("GameInfo.95")); //$NON-NLS-1$
@@ -119,26 +126,41 @@ public class GameInfo {
 		} else if (base.toString().endsWith(".tbl")){ //$NON-NLS-1$
 			type = MOD_TYPE.MOD_CS_PLUS;
 			dataDir = base.getParentFile();
-            defaultImageExt = ".bmp";
+			if (EditorApp.EDITOR_BITMAP_MODE == 1)
+				defaultImageExt = ".png";
+			else
+				defaultImageExt = ".bmp";
 		} else if (base.toString().endsWith(".bin")) { //$NON-NLS-1$
 			if (base.getName().equals("mrmap.bin")) { //$NON-NLS-1$
 				//moustache
 				type = MOD_TYPE.MOD_MR;
 				dataDir = base.getParentFile();
-                defaultImageExt = ".png";
+				if (EditorApp.EDITOR_BITMAP_MODE == 1)
+					defaultImageExt = ".png";
+				else
+					defaultImageExt = ".bmp";
 			} else {
 				type = MOD_TYPE.MOD_KS;
 				dataDir = base.getParentFile();
-                defaultImageExt = ".png";
+				if (EditorApp.EDITOR_BITMAP_MODE == 1)
+					defaultImageExt = ".png";
+				else
+					defaultImageExt = ".bmp";
 			}
 		} else if (base.toString().endsWith(".pxm")) { //$NON-NLS-1$
 			type = MOD_TYPE.MOD_CS_PLUS;
 			dataDir = base.getParentFile().getParentFile();
-            defaultImageExt = ".bmp";
+			if (EditorApp.EDITOR_BITMAP_MODE == 1)
+				defaultImageExt = ".png";
+			else
+				defaultImageExt = ".bmp";
 		} else if (base.toString().endsWith(".csmap")) { //$NON-NLS-1$
 			type = MOD_TYPE.MOD_CS;
 			dataDir = base.getParentFile().getParentFile();
-            defaultImageExt = ".bmp";
+			if (EditorApp.EDITOR_BITMAP_MODE == 1)
+				defaultImageExt = ".png";
+			else
+				defaultImageExt = ".bmp";
 		}
 		gameConfig = new BlConfig(dataDir, type);
 		String imageExtension = gameConfig.getImageExtension();
@@ -242,6 +264,78 @@ public class GameInfo {
 			results = lineHolder.toArray(new String[lineHolder.size()]);
 		} catch (FileNotFoundException err) {
 			StrTools.msgBox(Messages.getString("GameInfo.14")); //$NON-NLS-1$
+		}		
+		return results;
+	}
+
+	private static String[] loadBackgroundTypeNames() {
+		File backgroundFile = new File("backgroundTypes.txt"); //$NON-NLS-1$
+		String[] results = new String[0];
+		ArrayList<String> lineHolder = new ArrayList<>();
+		try {
+			Scanner sc = new Scanner(backgroundFile);
+			//String currentLine;
+			while (sc.hasNextLine()) {
+				lineHolder.add(sc.nextLine());				
+			}
+			sc.close();
+			results = lineHolder.toArray(new String[lineHolder.size()]);
+		} catch (FileNotFoundException err) {
+			StrTools.msgBox(Messages.getString("GameInfo.Celia.1")); //$NON-NLS-1$
+		}		
+		return results;
+	}
+
+	private static String[] loadNpcSizeNames() {
+		File sizeFile = new File("npcSize.txt"); //$NON-NLS-1$
+		String[] results = new String[0];
+		ArrayList<String> lineHolder = new ArrayList<>();
+		try {
+			Scanner sc = new Scanner(sizeFile);
+			//String currentLine;
+			while (sc.hasNextLine()) {
+				lineHolder.add(sc.nextLine());				
+			}
+			sc.close();
+			results = lineHolder.toArray(new String[lineHolder.size()]);
+		} catch (FileNotFoundException err) {
+			StrTools.msgBox(Messages.getString("GameInfo.Celia.2")); //$NON-NLS-1$
+		}		
+		return results;
+	}
+
+	private static String[] loadNpcSurfaceNames() {
+		File surfaceFile = new File("npcSurfaceList.txt"); //$NON-NLS-1$
+		String[] results = new String[0];
+		ArrayList<String> lineHolder = new ArrayList<>();
+		try {
+			Scanner sc = new Scanner(surfaceFile);
+			//String currentLine;
+			while (sc.hasNextLine()) {
+				lineHolder.add(sc.nextLine());				
+			}
+			sc.close();
+			results = lineHolder.toArray(new String[lineHolder.size()]);
+		} catch (FileNotFoundException err) {
+			StrTools.msgBox(Messages.getString("GameInfo.Celia.3")); //$NON-NLS-1$
+		}		
+		return results;
+	}
+
+	private static String[] loadMapBossesNames() {
+		File bossFile = new File("mapBosses.txt"); //$NON-NLS-1$
+		String[] results = new String[0];
+		ArrayList<String> lineHolder = new ArrayList<>();
+		try {
+			Scanner sc = new Scanner(bossFile);
+			//String currentLine;
+			while (sc.hasNextLine()) {
+				lineHolder.add(sc.nextLine());				
+			}
+			sc.close();
+			results = lineHolder.toArray(new String[lineHolder.size()]);
+		} catch (FileNotFoundException err) {
+			StrTools.msgBox(Messages.getString("GameInfo.Celia.4")); //$NON-NLS-1$
 		}		
 		return results;
 	}
@@ -1181,12 +1275,29 @@ public class GameInfo {
 		return categoryMap.get(category).getSubcatNames();		
 	}
 	
-	public Vector<EntityData> getEntityList(String category, String subcat) {
+	public Vector<EntityData> getEntityList(String category, String subcat, String name) {
 		if (category == null) category = "All"; //$NON-NLS-1$
 		if (subcat == null) subcat = "All"; //$NON-NLS-1$
 		EntityCategory cat = categoryMap.get(category);
 		EntitySubcat sub = cat.getSubcat(subcat);
-		return sub.getList();
+		// joexyz
+		Vector<EntityData> results = sub.getList();
+
+		if (name.length() == 0) {
+			return results;
+		}
+
+		Vector<EntityData> filteredResults = new Vector<EntityData>();
+
+		for (int i = 0; i < results.size(); i++) {
+			EntityData entity = results.get(i);
+
+			if (entity.getName().toLowerCase().contains(name.toLowerCase())) {
+				filteredResults.add(entity);
+			}
+		}
+
+		return filteredResults;
 	}
 	
 	public void execute() {

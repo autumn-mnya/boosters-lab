@@ -53,58 +53,10 @@ public class NpcTblEditor extends JDialog implements ActionListener {
 	private JTextField hpField = new JTextField(6);
 	private JTextField xpField = new JTextField(6);
 	private JTextField dmgField = new JTextField(6);
-	private JComboBox<String> sizeList = new JComboBox<>(sizeNames);
-	private static final String[] sizeNames = {
-		Messages.getString("NpcTblEditor.5"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.6"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.7"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.8") //$NON-NLS-1$
-	};
+	private JComboBox<String> sizeList = new JComboBox<>(GameInfo.NpcSizeNames);
 	private JComboBox<String> hurtList = new JComboBox<>(GameInfo.sfxNames);
 	private JComboBox<String> deathList = new JComboBox<>(GameInfo.sfxNames);
-	private JComboBox<String> tilesetList = new JComboBox<>(tilesetNames);
-	private static final String[] tilesetNames = {
-		Messages.getString("NpcTblEditor.9"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.10"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.11"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.12"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.13"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.14"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.15"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.16"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.17"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.18"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.19"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.20"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.21"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.22"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.23"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.24"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.25"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.26"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.27"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.28"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.29"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.30"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.31"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.32"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.33"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.34"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.35"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.36"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.37"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.38"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.39"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.40"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.41"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.42"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.43"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.44"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.45"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.46"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.47"), //$NON-NLS-1$
-		Messages.getString("NpcTblEditor.48") //$NON-NLS-1$
-	};
+	private JComboBox<String> tilesetList = new JComboBox<>(GameInfo.NpcSurfaceNames);
 	
 	//that box panel
 	//private JPanel previewPane = new JPanel();

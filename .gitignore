@@ -49,3 +49,5 @@ nofun
 out_classic
 *.zip
 editor.rect
+
+.vscode/
