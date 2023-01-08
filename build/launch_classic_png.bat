@@ -1,1 +1,1 @@
-java -jar BoostLab.jar "MODE=0" "BITMAPMODE=1"
+java -jar BoostLab.jar -Dsun.java2d.d3d=false "MODE=0" "BITMAPMODE=1"

@@ -1,1 +1,1 @@
-java -jar BoostLab.jar "MODE=0"
+java -jar BoostLab.jar -Dsun.java2d.d3d=false "MODE=0"
