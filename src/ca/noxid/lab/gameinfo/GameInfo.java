@@ -24,10 +24,8 @@ public class GameInfo {
 	private Vector<Mapdata> mapdataStore;
 	private Vector<Mapdata> tempMapdata = new Vector<>();
 	private File base;
-	private String imageExtension;
 	private File dataDir;
 	private BlConfig gameConfig;
-	private static final String CSPLUS_IMG_EXT = ".bmp";
 	private static final boolean GIRS_SPECIAL_MAP_SORT = false;
 	
 	private static final String entityInfo_head = "//num	short1	short2	long rect desc category\r\n" +
@@ -69,7 +67,12 @@ public class GameInfo {
 	
 	//getter and setter
 	public File getDataDirectory() {return dataDir;}
-	public String getImgExtension() {return imageExtension;}
+
+	/**
+	 * Use <code>{@link #getConfig()}.{@link BlConfig#getImageExtension() getImageExtension()}</code> instead.
+	 */
+	@Deprecated
+	public String getImgExtension() {return gameConfig.getImageExtension();}
 	public Mapdata getMapdata(int i) {return mapdataStore.get(i);}
 	public Mapdata[] getMapdata() {return mapdataStore.toArray(new Mapdata[mapdataStore.size()]);}
 	public Mapdata getMapdataTemp(int i) {return tempMapdata.get(i);}
@@ -84,6 +87,10 @@ public class GameInfo {
 	public MOD_TYPE type;
 	
 	public static final String[] sfxNames = loadSfxNames();
+	public static final String[] BackgroundTypeNames = loadBackgroundTypeNames();
+	public static final String[] NpcSizeNames = loadNpcSizeNames();
+	public static final String[] NpcSurfaceNames = loadNpcSurfaceNames();
+	public static final String[] MapBossesNames = loadMapBossesNames();
 
 	public File getBase() {
 		return base;
@@ -93,6 +100,7 @@ public class GameInfo {
 		this.base = base;
 		mapdataStore = new Vector<>();
 		categoryMap = new HashMap<>();
+		String defaultImageExt = ".pbm";
 		if (base.toString().endsWith(".exe")) { //$NON-NLS-1$
 			dataDir = new File(base.getParent() + "/data"); //$NON-NLS-1$
 			if (dataDir.list(new FileSuffixFilter("stprj")).length > 0) {
@@ -105,6 +113,10 @@ public class GameInfo {
 				try {
                     executable = new CSExe(base); //can fix swdata
                     getExeData(executable);
+					if (EditorApp.EDITOR_BITMAP_MODE == 1)
+						defaultImageExt = ".png";
+					else
+						defaultImageExt = ".bmp";
                 } catch (Exception ioe) {
 				    ioe.printStackTrace();
                     StrTools.msgBox(Messages.getString("GameInfo.95")); //$NON-NLS-1$
@@ -114,28 +126,46 @@ public class GameInfo {
 		} else if (base.toString().endsWith(".tbl")){ //$NON-NLS-1$
 			type = MOD_TYPE.MOD_CS_PLUS;
 			dataDir = base.getParentFile();
-			imageExtension = CSPLUS_IMG_EXT; //$NON-NLS-1$
+			if (EditorApp.EDITOR_BITMAP_MODE == 1)
+				defaultImageExt = ".png";
+			else
+				defaultImageExt = ".bmp";
 		} else if (base.toString().endsWith(".bin")) { //$NON-NLS-1$
 			if (base.getName().equals("mrmap.bin")) { //$NON-NLS-1$
 				//moustache
 				type = MOD_TYPE.MOD_MR;
 				dataDir = base.getParentFile();
-				imageExtension = ".png"; //$NON-NLS-1$				
+				if (EditorApp.EDITOR_BITMAP_MODE == 1)
+					defaultImageExt = ".png";
+				else
+					defaultImageExt = ".bmp";
 			} else {
 				type = MOD_TYPE.MOD_KS;
 				dataDir = base.getParentFile();
-				imageExtension = ".png"; //$NON-NLS-1$
+				if (EditorApp.EDITOR_BITMAP_MODE == 1)
+					defaultImageExt = ".png";
+				else
+					defaultImageExt = ".bmp";
 			}
 		} else if (base.toString().endsWith(".pxm")) { //$NON-NLS-1$
 			type = MOD_TYPE.MOD_CS_PLUS;
 			dataDir = base.getParentFile().getParentFile();
-			imageExtension = CSPLUS_IMG_EXT; //$NON-NLS-1$
+			if (EditorApp.EDITOR_BITMAP_MODE == 1)
+				defaultImageExt = ".png";
+			else
+				defaultImageExt = ".bmp";
 		} else if (base.toString().endsWith(".csmap")) { //$NON-NLS-1$
 			type = MOD_TYPE.MOD_CS;
 			dataDir = base.getParentFile().getParentFile();
-			imageExtension = ".bmp"; //$NON-NLS-1$
+			if (EditorApp.EDITOR_BITMAP_MODE == 1)
+				defaultImageExt = ".png";
+			else
+				defaultImageExt = ".bmp";
 		}
 		gameConfig = new BlConfig(dataDir, type);
+		String imageExtension = gameConfig.getImageExtension();
+		if (".pbm".equals(imageExtension))
+			gameConfig.setImageExtension((imageExtension = defaultImageExt));
 		fillMapdata(base);
 		mycharFile = new File(dataDir + "/MyChar" + imageExtension); //$NON-NLS-1$
 		mycharFile = ResourceManager.checkBase(mycharFile);
@@ -150,7 +180,6 @@ public class GameInfo {
 		armsImageFile = new File(dataDir + "/ArmsImage" + imageExtension); //$NON-NLS-1$
 		armsImageFile = ResourceManager.checkBase(armsImageFile);
 		loadNpcTbl(ResourceManager.checkBase(new File(dataDir + "/npc.tbl"))); //$NON-NLS-1$
-		
 	}
 	
 	public static void writeDefaultFiles(File dest) {
@@ -238,6 +267,78 @@ public class GameInfo {
 		}		
 		return results;
 	}
+
+	private static String[] loadBackgroundTypeNames() {
+		File backgroundFile = new File("backgroundTypes.txt"); //$NON-NLS-1$
+		String[] results = new String[0];
+		ArrayList<String> lineHolder = new ArrayList<>();
+		try {
+			Scanner sc = new Scanner(backgroundFile);
+			//String currentLine;
+			while (sc.hasNextLine()) {
+				lineHolder.add(sc.nextLine());				
+			}
+			sc.close();
+			results = lineHolder.toArray(new String[lineHolder.size()]);
+		} catch (FileNotFoundException err) {
+			StrTools.msgBox(Messages.getString("GameInfo.Celia.1")); //$NON-NLS-1$
+		}		
+		return results;
+	}
+
+	private static String[] loadNpcSizeNames() {
+		File sizeFile = new File("npcSize.txt"); //$NON-NLS-1$
+		String[] results = new String[0];
+		ArrayList<String> lineHolder = new ArrayList<>();
+		try {
+			Scanner sc = new Scanner(sizeFile);
+			//String currentLine;
+			while (sc.hasNextLine()) {
+				lineHolder.add(sc.nextLine());				
+			}
+			sc.close();
+			results = lineHolder.toArray(new String[lineHolder.size()]);
+		} catch (FileNotFoundException err) {
+			StrTools.msgBox(Messages.getString("GameInfo.Celia.2")); //$NON-NLS-1$
+		}		
+		return results;
+	}
+
+	private static String[] loadNpcSurfaceNames() {
+		File surfaceFile = new File("npcSurfaceList.txt"); //$NON-NLS-1$
+		String[] results = new String[0];
+		ArrayList<String> lineHolder = new ArrayList<>();
+		try {
+			Scanner sc = new Scanner(surfaceFile);
+			//String currentLine;
+			while (sc.hasNextLine()) {
+				lineHolder.add(sc.nextLine());				
+			}
+			sc.close();
+			results = lineHolder.toArray(new String[lineHolder.size()]);
+		} catch (FileNotFoundException err) {
+			StrTools.msgBox(Messages.getString("GameInfo.Celia.3")); //$NON-NLS-1$
+		}		
+		return results;
+	}
+
+	private static String[] loadMapBossesNames() {
+		File bossFile = new File("mapBosses.txt"); //$NON-NLS-1$
+		String[] results = new String[0];
+		ArrayList<String> lineHolder = new ArrayList<>();
+		try {
+			Scanner sc = new Scanner(bossFile);
+			//String currentLine;
+			while (sc.hasNextLine()) {
+				lineHolder.add(sc.nextLine());				
+			}
+			sc.close();
+			results = lineHolder.toArray(new String[lineHolder.size()]);
+		} catch (FileNotFoundException err) {
+			StrTools.msgBox(Messages.getString("GameInfo.Celia.4")); //$NON-NLS-1$
+		}		
+		return results;
+	}
 	
 	public void loadImages(ResourceManager iMan) {
 		iMan.reloadImage(mycharFile, 1);
@@ -290,6 +391,7 @@ public class GameInfo {
 	}
 	
 	public String[] getTilesets() {
+		String imageExtension = gameConfig.getImageExtension();
 		ArrayList<String> flist = new ArrayList<>();
 		File stageDir = new File(dataDir + "/Stage"); //$NON-NLS-1$
 		File[] fileList = stageDir.listFiles(new TilesetFilter());
@@ -310,6 +412,7 @@ public class GameInfo {
 		return flist.toArray(new String[flist.size()]);
 	}
 	public String[] getNpcSheets() {
+		String imageExtension = gameConfig.getImageExtension();
 		ArrayList<String> flist = new ArrayList<>();
 		File stageDir = new File(dataDir + "/Npc"); //$NON-NLS-1$
 		File[] fileList = stageDir.listFiles(new NpcFilter());
@@ -334,6 +437,7 @@ public class GameInfo {
 	}
 	
 	public String[] getBackgrounds() {
+		String imageExtension = gameConfig.getImageExtension();
 		ArrayList<String> flist = new ArrayList<>();
 		File[] fileList = dataDir.listFiles(new BackgroundFilter());
 		for (File f : fileList) {
@@ -774,7 +878,6 @@ public class GameInfo {
 			exe.patch(imgExt, imgStrOffset3);
 			changeFileExt(dataDir, extstr, ".bmp"); //$NON-NLS-1$
 		}
-		imageExtension = ".bmp"; //$NON-NLS-1$
 	}
 	
 	private void changeFileExt(File baseDir, String oldExt, String newExt) {
@@ -921,33 +1024,17 @@ public class GameInfo {
 			oStream.close();
 	}
 	
-	public void exportMapdata() {
+	public void exportMapdata(String outFilename, MOD_TYPE format) throws IOException {
 		String encoding = gameConfig.getEncoding();
-		File outFile = new File(dataDir + "/stage.tbl"); //$NON-NLS-1$
-		File out2 = new File(dataDir + "/csmap.bin"); //$NON-NLS-1$
-		try {
-			FileOutputStream oStream = new FileOutputStream(outFile);
-			FileChannel chan = oStream.getChannel();
-			for (Mapdata m : mapdataStore) {
-				ByteBuffer dBuf = m.toBuf(MOD_TYPE.MOD_CS_PLUS, encoding);
-				chan.write(dBuf);
-			}
-			chan.close();
-			oStream.close();
-			
-			oStream = new FileOutputStream(out2);
-			chan = oStream.getChannel();
-			for (Mapdata m : mapdataStore) {
-				ByteBuffer dBuf = m.toBuf(MOD_TYPE.MOD_CS, encoding);
-				chan.write(dBuf);
-			}
-			chan.close();
-			oStream.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		File outFile = new File(dataDir + "/" + outFilename); //$NON-NLS-1$
+		FileOutputStream oStream = new FileOutputStream(outFile);
+		FileChannel chan = oStream.getChannel();
+		for (Mapdata m : mapdataStore) {
+			ByteBuffer dBuf = m.toBuf(format, encoding);
+			chan.write(dBuf);
 		}
-		
+		chan.close();
+		oStream.close();
 	}
 	
 	public void commitChanges() {
@@ -1049,19 +1136,19 @@ public class GameInfo {
 	private class TilesetFilter implements FilenameFilter {
 		@Override
 		public boolean accept(File arg0, String arg1) {
-			return arg1.startsWith(gameConfig.getTilesetPrefix()) && arg1.endsWith(imageExtension);
+			return arg1.startsWith(gameConfig.getTilesetPrefix()) && arg1.endsWith(gameConfig.getImageExtension());
 		}		
 	}
 	private class NpcFilter implements FilenameFilter {
 		@Override
 		public boolean accept(File arg0, String arg1) {
-			return arg1.startsWith(gameConfig.getNpcPrefix()) && arg1.endsWith(imageExtension);
+			return arg1.startsWith(gameConfig.getNpcPrefix()) && arg1.endsWith(gameConfig.getImageExtension());
 		}		
 	}
 	private class BackgroundFilter implements FilenameFilter {
 		@Override
 		public boolean accept(File arg0, String arg1) {
-			return arg1.startsWith(gameConfig.getBackgroundPrefix()) && arg1.endsWith(imageExtension);
+			return arg1.startsWith(gameConfig.getBackgroundPrefix()) && arg1.endsWith(gameConfig.getImageExtension());
 		}		
 	}
 	
@@ -1188,12 +1275,29 @@ public class GameInfo {
 		return categoryMap.get(category).getSubcatNames();		
 	}
 	
-	public Vector<EntityData> getEntityList(String category, String subcat) {
+	public Vector<EntityData> getEntityList(String category, String subcat, String name) {
 		if (category == null) category = "All"; //$NON-NLS-1$
 		if (subcat == null) subcat = "All"; //$NON-NLS-1$
 		EntityCategory cat = categoryMap.get(category);
 		EntitySubcat sub = cat.getSubcat(subcat);
-		return sub.getList();
+		// joexyz
+		Vector<EntityData> results = sub.getList();
+
+		if (name.length() == 0) {
+			return results;
+		}
+
+		Vector<EntityData> filteredResults = new Vector<EntityData>();
+
+		for (int i = 0; i < results.size(); i++) {
+			EntityData entity = results.get(i);
+
+			if (entity.getName().toLowerCase().contains(name.toLowerCase())) {
+				filteredResults.add(entity);
+			}
+		}
+
+		return filteredResults;
 	}
 	
 	public void execute() {
@@ -1202,7 +1306,13 @@ public class GameInfo {
 			String gamePath = dataDir.getParent() + "/CsEngine.exe"; //$NON-NLS-1$
 			Runtime rt = Runtime.getRuntime();
 			try {
-				rt.exec(gamePath, null, gameLoc);
+				String os = System.getProperty("os.name");
+				if( !os.contains("Windows")) {
+					rt.exec("wine " + gamePath, null, gameLoc);
+				}
+				else {
+					rt.exec(gamePath, null, gameLoc);
+				}
 			} catch (IOException e) {
 				StrTools.msgBox(Messages.getString("GameInfo.46")); //$NON-NLS-1$
 				e.printStackTrace();
@@ -1487,6 +1597,7 @@ public class GameInfo {
 		if (type == MOD_TYPE.MOD_CS) {
 			foundFiles.addAll(CS_DEFAULT_FILES());
 		}
+		String imageExtension = gameConfig.getImageExtension();
 		for (Mapdata m : mapdataStore) {
 			foundFiles.add(new File(dataDir + "/" + m.getBG() + imageExtension));
 			foundFiles.add(new File(dataDir + "/Npc/" + gameConfig.getNpcPrefix() + m.getNPC1() + imageExtension));
@@ -1503,26 +1614,27 @@ public class GameInfo {
 
 	private LinkedList<File> CS_DEFAULT_FILES() {
 		LinkedList<File> flist = new LinkedList<>();
+		String imageExtension = gameConfig.getImageExtension();
 		flist.add(new File(dataDir + "/ArmsItem.tsc"));
 		flist.add(new File(dataDir + "/Credit.tsc"));
 		flist.add(new File(dataDir + "/Head.tsc"));
 		flist.add(new File(dataDir + "/StageSelect.tsc"));
 		flist.add(new File(dataDir + "/npc.tbl"));
-		flist.add(new File(dataDir + "/Face.bmp"));
-		flist.add(new File(dataDir + "/Loading.bmp"));
-		flist.add(new File(dataDir + "/TextBox.bmp"));
-		flist.add(new File(dataDir + "/Title.bmp"));
-		flist.add(new File(dataDir + "/ItemImage.bmp"));
-		flist.add(new File(dataDir + "/StageImage.bmp"));
-		flist.add(new File(dataDir + "/Fade.bmp"));
-		flist.add(new File(dataDir + "/Caret.bmp"));
-		flist.add(new File(dataDir + "/Bullet.bmp"));
-		flist.add(new File(dataDir + "/casts.bmp"));
-		flist.add(new File(dataDir + "/Arms.bmp"));
-		flist.add(new File(dataDir + "/ArmsImage.bmp"));
-		flist.add(new File(dataDir + "/MyChar.bmp"));
-		flist.add(new File(dataDir + "/Npc/NpcRegu.bmp"));
-		flist.add(new File(dataDir + "/Npc/NpcSym.bmp"));
+		flist.add(new File(dataDir + "/Face" + imageExtension));
+		flist.add(new File(dataDir + "/Loading" + imageExtension));
+		flist.add(new File(dataDir + "/TextBox" + imageExtension));
+		flist.add(new File(dataDir + "/Title" + imageExtension));
+		flist.add(new File(dataDir + "/ItemImage" + imageExtension));
+		flist.add(new File(dataDir + "/StageImage" + imageExtension));
+		flist.add(new File(dataDir + "/Fade" + imageExtension));
+		flist.add(new File(dataDir + "/Caret" + imageExtension));
+		flist.add(new File(dataDir + "/Bullet" + imageExtension));
+		flist.add(new File(dataDir + "/casts" + imageExtension));
+		flist.add(new File(dataDir + "/Arms" + imageExtension));
+		flist.add(new File(dataDir + "/ArmsImage" + imageExtension));
+		flist.add(new File(dataDir + "/MyChar" + imageExtension));
+		flist.add(new File(dataDir + "/Npc/NpcRegu" + imageExtension));
+		flist.add(new File(dataDir + "/Npc/NpcSym" + imageExtension));
 		return flist;
 	}
 }

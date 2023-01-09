@@ -33,31 +33,6 @@ public class MapdataPane extends BgPanel implements ActionListener, Changeable {
 	private boolean shouldWarn;
 	private boolean changed;
 	
-	private static final String[] bossList = {
-		Messages.getString("MapdataPane.0"), //$NON-NLS-1$
-		Messages.getString("MapdataPane.1"), //$NON-NLS-1$
-		Messages.getString("MapdataPane.2"), //$NON-NLS-1$
-		Messages.getString("MapdataPane.3"), //$NON-NLS-1$
-		Messages.getString("MapdataPane.4"), //$NON-NLS-1$
-		Messages.getString("MapdataPane.5"), //$NON-NLS-1$
-		Messages.getString("MapdataPane.6"), //$NON-NLS-1$
-		Messages.getString("MapdataPane.7"), //$NON-NLS-1$
-		Messages.getString("MapdataPane.8"), //$NON-NLS-1$
-		Messages.getString("MapdataPane.9") //$NON-NLS-1$
-	};
-	
-	private static final String[] bgTypes = {
-		Messages.getString("MapdataPane.10"), //$NON-NLS-1$
-		Messages.getString("MapdataPane.11"), //$NON-NLS-1$
-		Messages.getString("MapdataPane.12"), //$NON-NLS-1$
-		Messages.getString("MapdataPane.13"), //$NON-NLS-1$
-		Messages.getString("MapdataPane.14"), //$NON-NLS-1$
-		Messages.getString("MapdataPane.15"), //$NON-NLS-1$
-		Messages.getString("MapdataPane.16"), //$NON-NLS-1$
-		Messages.getString("MapdataPane.17"), //$NON-NLS-1$
-		Messages.getString("MapdataPane.18"), //$NON-NLS-1$
-	};
-	
 	public Mapdata getMapdata() {return dat;}
 	
 	public MapdataPane(GameInfo i, int mapNum, BufferedImage img, boolean warn) {
@@ -116,10 +91,10 @@ public class MapdataPane extends BgPanel implements ActionListener, Changeable {
 		background = new JComboBox<>(i.getBackgrounds());
 		background.setSelectedItem(dat.getBG());
 		background.addActionListener(this);
-		bgType = new JComboBox<>(bgTypes);
+		bgType = new JComboBox<>(GameInfo.BackgroundTypeNames);
 		bgType.setSelectedIndex(dat.getScroll());
 		bgType.addActionListener(this);
-		bossType = new JComboBox<>(bossList);
+		bossType = new JComboBox<>(GameInfo.MapBossesNames);
 		bossType.setSelectedIndex(dat.getBoss());
 		bossType.addActionListener(this);
 		
