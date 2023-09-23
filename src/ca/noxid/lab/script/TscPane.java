@@ -888,7 +888,7 @@ public class TscPane extends JTextPane implements ActionListener, Changeable {
 		if (fileSize > 0) {
 			int cypher = dataBuf.get(fileSize / 2);
 			datArray = dataBuf.array();
-			if (scriptFile.getName().endsWith(".tsc")) { //$NON-NLS-1$
+			if (EditorApp.EDITOR_SCRIPT_ENCRYPTION_MODE == 0 && scriptFile.getName().endsWith(".tsc")) { //$NON-NLS-1$
 				for (int i = 0; i < fileSize; i++) {
 					if (i != fileSize / 2) {
 						datArray[i] -= cypher;
@@ -964,7 +964,7 @@ public class TscPane extends JTextPane implements ActionListener, Changeable {
 			int fileSize = stripArr.length;
 			if (fileSize > 0) {
 				int cypher = stripArr[fileSize / 2];
-				if (scriptFile.getName().endsWith(".tsc")) { //$NON-NLS-1$
+				if (EditorApp.EDITOR_SCRIPT_ENCRYPTION_MODE == 0 && scriptFile.getName().endsWith(".tsc")) { //$NON-NLS-1$
 					for (int i = 0; i < fileSize; i++) {
 						if (i != fileSize / 2) {
 							stripArr[i] += cypher;
@@ -1024,7 +1024,7 @@ public class TscPane extends JTextPane implements ActionListener, Changeable {
 			int fileSize = stripArr.length;
 			if (fileSize > 0) {
 				int cypher = stripArr[fileSize / 2];
-				if (dest.getName().endsWith(".tsc")) { //$NON-NLS-1$
+				if (EditorApp.EDITOR_SCRIPT_ENCRYPTION_MODE == 0 && dest.getName().endsWith(".tsc")) { //$NON-NLS-1$
 					for (int i = 0; i < fileSize; i++) {
 						if (i != fileSize / 2) {
 							stripArr[i] += cypher;
